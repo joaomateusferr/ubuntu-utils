@@ -8,7 +8,7 @@ https://github.com/ClickHouse/ClickHouse
 
 https://github.com/ClickHouse/clickhouse-odbc
 
-## official Documentation
+## Official Documentation
 
 Take a look at the official ClickHouse documentation:
 
