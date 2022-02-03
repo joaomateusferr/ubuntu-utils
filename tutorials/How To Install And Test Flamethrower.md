@@ -27,7 +27,7 @@ https://youtu.be/iONXcli1afI
 
 
 ## How Install And Test Flamethrower
-Take a look at [pull_and_test_flame.sh](../scripts/flamethrower/pull_and_test_flame.sh)
+Take a look at [pull_and_test_flame.sh](../scripts/flamethrower/pull_and_test_flamethrower.sh)
 
 ## Flamethrower usage
 ```
