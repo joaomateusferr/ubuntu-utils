@@ -14,28 +14,3 @@ else
     apt install clickhouse-server clickhouse-client #the password for default user will be required during installation
     service clickhouse-server start
 fi
-
-#TESTS
-
-#check if clickhouse is active
-#sudo service clickhouse-server status
-
-#test the conection flow
-#clickhouse-client --password
-
-#create test table
-#CREATE TABLE visits ( id UInt64, duration Float64, url String, created DateTime ) ENGINE = MergeTree() PRIMARY KEY id ORDER BY id;
-
-#inset test
-#INSERT INTO visits VALUES (1, 12.5, 'http://example.com', NOW())
-
-#select test
-#SELECT duration, url, created  FROM default.visits LIMIT 100
-
-#tabix (recommended GUI)
-#https://github.com/tabixio/tabix
-
-#default connection values
-#http://host:port: http://0.0.0.0:8123/
-#login: default
-#password: default_password
