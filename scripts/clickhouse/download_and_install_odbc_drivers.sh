@@ -110,8 +110,3 @@ else
         fi
     fi
 fi
-
-#TESTS
-
-#test driver and check dependencies
-#ldd /usr/local/lib/libclickhouseodbcw.so

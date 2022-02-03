@@ -1,10 +1,5 @@
 #!/bin/bash
 
-#TESTS
-
-#check odbcinst paths
-#odbcinst -j
-
 if [ $(id -u) -ne 0 ]; then #this screipt equire root privileges (root id is 0)
     echo 'No root privileges detected!'
     echo 'Please, run this script as root'
@@ -51,8 +46,3 @@ else
     echo "Setup       = /usr/local/lib/libclickhouseodbcw.so" >> $ODBCINST_INI_PATH
     echo "UsageCount  = 1" >> $ODBCINST_INI_PATH  
 fi
-
-#TESTS
-
-#check if the odbc driver is working
-#isql -v "ClickHouse DSN (Unicode)"

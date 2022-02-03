@@ -1,5 +1,20 @@
 # How to deploy a ClickHouse database and configure odbc drivers
 
+## Official Repositorys
+
+Take a look at the official ClickHouse repositorys:
+
+https://github.com/ClickHouse/ClickHouse
+
+https://github.com/ClickHouse/clickhouse-odbc
+
+## official Documentation
+
+Take a look at the official ClickHouse documentation:
+
+https://clickhouse.com/docs/en/
+
+
 ## Install ClickHouse
 
 Take a look at [install_clickhouse.sh](../scripts/clickhouse/install_clickhouse.sh)
@@ -33,12 +48,10 @@ SELECT duration, url, created  FROM default.visits LIMIT 100
 
 ## Recommended Visual Interface
 
-
 tabix -> https://github.com/tabixio/tabix
 
 
 ## Default connection values
-
 
 http://host:port: http://0.0.0.0:8123/
 
@@ -56,8 +69,15 @@ Take a look at [install_odbc_drivers_dependencies.sh](../scripts/clickhouse/inst
 
 Take a look at [download_and_install_odbc_drivers.sh](../scripts/clickhouse/download_and_install_odbc_drivers.sh)
 
-## Configure odbc driver
 
+Test driver and check dependencies
+
+```
+ldd /usr/local/lib/libclickhouseodbcw.so
+```
+
+
+## Configure odbc driver
 
 Check odbcinst paths
 
