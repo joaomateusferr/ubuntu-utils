@@ -1,4 +1,4 @@
-# Flamethrower Utils
+# How To Install And Test Flamethrower
 
 
 ## Official Repository
