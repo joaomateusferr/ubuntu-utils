@@ -4,7 +4,7 @@
 
 Take a look at [install_clickhouse.sh](../scripts/clickhouse/install_clickhouse.sh)
 
-## Tests
+### Tests
 
 Check if clickhouse is active
 
@@ -49,3 +49,35 @@ tabix -> https://github.com/tabixio/tabix
 
 **password**: default_password
 
+
+## Install odbc drivers dependencies
+
+Take a look at [install_odbc_drivers_dependencies.sh](../scripts/clickhouse/install_odbc_drivers_dependencies.sh)
+
+
+## Download and install odbc drivers
+
+Take a look at [download_and_install_odbc_drivers.sh](../scripts/clickhouse/download_and_install_odbc_drivers.sh)
+
+
+## Configure odbc driver
+
+
+### Tests
+
+Check odbcinst paths
+
+```
+odbcinst -j
+```
+
+Take a look at [configure_odbc_driver.sh](../scripts/clickhouse/configure_odbc_driver.sh)
+
+
+### Tests
+
+check if the odbc driver is working
+
+```
+isql -v "ClickHouse DSN (Unicode)"
+```
