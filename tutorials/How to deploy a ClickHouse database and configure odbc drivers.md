@@ -18,13 +18,11 @@ Create table
 CREATE TABLE visits ( id UInt64, duration Float64, url String, created DateTime ) ENGINE = MergeTree() PRIMARY KEY id ORDER BY id;
 ```
 
-
 Inset
 
 ```
 INSERT INTO visits VALUES (1, 12.5, 'http://example.com', NOW())
 ```
-
 
 Select
 
