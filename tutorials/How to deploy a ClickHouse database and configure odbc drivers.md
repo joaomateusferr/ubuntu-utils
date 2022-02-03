@@ -4,6 +4,7 @@
 
 Take a look at [install_clickhouse.sh](../scripts/clickhouse/install_clickhouse.sh)
 
+
 Check if clickhouse is active
 
 ```
@@ -57,7 +58,6 @@ Take a look at [install_odbc_drivers_dependencies.sh](../scripts/clickhouse/inst
 
 Take a look at [download_and_install_odbc_drivers.sh](../scripts/clickhouse/download_and_install_odbc_drivers.sh)
 
-
 ## Configure odbc driver
 
 
@@ -66,6 +66,7 @@ Check odbcinst paths
 ```
 odbcinst -j
 ```
+
 
 Take a look at [configure_odbc_driver.sh](../scripts/clickhouse/configure_odbc_driver.sh)
 
