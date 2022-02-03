@@ -1,5 +1,4 @@
 # Flamethrower Utils
-A repository that contains useful scripts using shell script to deploy flamethrower.
 
 
 ## Official Repository
