@@ -4,7 +4,7 @@
 
 Take a look at [install_clickhouse.sh](../scripts/clickhouse/install_clickhouse.sh)
 
-### Tests
+**Tests**
 
 Check if clickhouse is active
 
@@ -43,11 +43,11 @@ tabix -> https://github.com/tabixio/tabix
 ## Default connection values
 
 
-**http://host:port**: http://0.0.0.0:8123/
+http://host:port: http://0.0.0.0:8123/
 
-**login**: default
+login: default
 
-**password**: default_password
+password: default_password
 
 
 ## Install odbc drivers dependencies
@@ -63,7 +63,7 @@ Take a look at [download_and_install_odbc_drivers.sh](../scripts/clickhouse/down
 ## Configure odbc driver
 
 
-### Tests
+**Tests**
 
 Check odbcinst paths
 
@@ -74,7 +74,7 @@ odbcinst -j
 Take a look at [configure_odbc_driver.sh](../scripts/clickhouse/configure_odbc_driver.sh)
 
 
-### Tests
+**Tests**
 
 check if the odbc driver is working
 
