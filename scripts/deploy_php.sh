@@ -16,7 +16,7 @@ else
     apt-get update
 
     sudo apt-get install apache2 php libapache2-mod-php
-    sudo apt-get install php-soap php-xml php-curl php-opcache php-gd php-sqlite3 php-mbstring #php-mysql
+    sudo apt-get install php-soap php-xml php-curl php-opcache php-gd php-sqlite3 php-mbstring #php-mysql php-odbc
     sudo apt install git
 
     if [ ! -e $PHP_DIR ];then
@@ -53,9 +53,8 @@ else
                 echo "error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT & ~E_NOTICE" >> $PHP_INI_PATH
             fi
 
-            sudo service apache2 restart
-            sudo apt install git
-            sudo chmod -R 777 /var/www/html/
+            service apache2 restart
+            chmod -R 777 /var/www/html/
             echo "<?php phpinfo(); ?>" >> /var/www/html/index.php
             rm -rf /var/www/html/index.html
         fi
