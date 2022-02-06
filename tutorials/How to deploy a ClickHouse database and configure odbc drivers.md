@@ -27,6 +27,13 @@ sudo service clickhouse-server status
 ```
 
 
+Logging in from the command line
+
+```
+clickhouse-client --password
+```
+
+
 Create table
 
 ```
