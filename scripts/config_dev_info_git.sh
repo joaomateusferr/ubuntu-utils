@@ -17,7 +17,8 @@ else
 
     git config --global user.name "$FULL_NAME"
     git config --global user.email "$EMAIL"
-    
 fi
+
+git config --global core.fileMode false
 
 #run "git config --global --list" to check if everthing is set
