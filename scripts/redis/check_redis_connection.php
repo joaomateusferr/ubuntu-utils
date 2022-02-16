@@ -7,8 +7,9 @@
 require __DIR__ . '/vendor/autoload.php';
 
 $client = new Predis\Client();
-$client->hset('user-01', 'name', 'joao', 'sur', 'ferreira', 'email', 'joao@test01@uol.com');
-//$client->hset('user-01', 'email', 'joao@test.tv');
+//$client->hset('user-01', 'name', 'joao', 'sur', 'ferreira', 'email', 'joao@test01@uol.com');
+$command = '$client->hset("user-01", "name", "joao", "sur", "ferreira", "email", "joao@test100.com");';
+eval($command);
 $value = $client->hgetall('user-01');
 var_dump($value);exit;
 
