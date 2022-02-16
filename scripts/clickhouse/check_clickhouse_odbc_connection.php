@@ -1,7 +1,9 @@
 <?php
 
+    //sudo apt-get install php-odbc
+
     $Connection = odbc_connect('ClickHouse DSN (Unicode)', 'default','1401');
-    $Sql = 'SELECT duration, url FROM default.visits LIMIT 100';
+    $Sql = 'SELECT * FROM visits WHERE id = 80';
     $Result = odbc_exec($Connection, $Sql);
 
     if($Result){

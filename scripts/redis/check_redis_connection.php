@@ -1,16 +1,18 @@
 <?php 
 
-//https://www.digitalocean.com/community/tutorials/how-to-install-and-use-composer-on-ubuntu-20-04
+//sudo apt-get install php-redis
 
-//composer require predis/predis
+$client = new Redis();
+$client->connect( '127.0.0.1', 6379, 3.5 );
 
-require __DIR__ . '/vendor/autoload.php';
+$obj = ['user-01', 'email', 'joao@test01@gmail.com'];
+$client->hset($obj[0],$obj[1],$obj[2]);
 
-$client = new Predis\Client();
-//$client->hset('user-01', 'name', 'joao', 'sur', 'ferreira', 'email', 'joao@test01@uol.com');
-$command = '$client->hset("user-01", "name", "joao", "sur", "ferreira", "email", "joao@test100.com");';
-eval($command);
+$obj = (['email' => 'joao@test01@outlook.com', 'name' => 'jao']);
+$client->hMSet('user-01',$obj);
+
 $value = $client->hgetall('user-01');
+$client->close();
 var_dump($value);exit;
 
 ?>
