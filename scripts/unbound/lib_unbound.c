@@ -3,7 +3,7 @@
 #include <stdio.h>      
 #include <arpa/inet.h>
 #include <unbound.h>
-#include <time.h>
+#include <sys/time.h>
 
 int main(void)
 {
@@ -11,11 +11,13 @@ int main(void)
         struct ub_result* result;
         int retval;
         float seconds;
-        clock_t start, end;
+        struct timeval stop, start;
 
-        start = clock();
+        gettimeofday(&start, NULL);
 
         ctx = ub_ctx_create();
+        ub_ctx_set_fwd(ctx, "127.0.0.1");
+
         if(!ctx) {
                 printf("error: could not create unbound context\n");
                 return 1;
@@ -35,10 +37,8 @@ int main(void)
         ub_resolve_free(result);
         ub_ctx_delete(ctx);
 
-        end = clock();
-        seconds = (float)(end - start) / CLOCKS_PER_SEC;
-
-        printf("Time in milliseconds %f\n", seconds*1000);
+        gettimeofday(&stop, NULL);
+        printf("took %lu us\n", (stop.tv_sec - start.tv_sec) * 1000000 + stop.tv_usec - start.tv_usec);
 
         return 0;
 }
