@@ -64,7 +64,7 @@ def main():
         ProcessDNSQueryThread = threading.Thread(target=ProcessDNSQuery, args=(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, DnsQueryAddress))
         ProcessDNSQueryThread.start()
 
-        print(str(threading.active_count()-1) + " active thread resolving dns") #thread debug 
+        #print(str(threading.active_count()-1) + " active thread resolving dns") #thread debug 
 
     DnsDisConnection.close()
     PowerDnsConnection.close()
