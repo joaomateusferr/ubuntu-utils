@@ -11,9 +11,9 @@ def ProcessDNSQuery(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, 
 
     DecodedDnsResponse = DNSRecord.parse(DnsResponse)
 
-    #test only
     DnsQueryName = DecodedDnsResponse.questions[0].qname
-    print(str(DnsQueryName))
+    
+    print(str(DnsQueryName)) #debug only
 
     DnsQueryNameToModify = "br.yahoo.com"
 
@@ -39,7 +39,6 @@ def ProcessDNSQuery(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, 
         else :
             DnsDisConnection.sendto(DnsResponse, DnsQueryAddress)
 
-
 def main():
 
     DnsDistIp = "127.0.0.1"
@@ -63,8 +62,9 @@ def main():
         DnsQuery, DnsQueryAddress = DnsDisConnection.recvfrom(BufferSize)
 
         ProcessDNSQueryThread = threading.Thread(target=ProcessDNSQuery, args=(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, DnsQueryAddress))
-        ProcessDNSQueryThread.start()  
+        ProcessDNSQueryThread.start()
 
+        print(str(threading.active_count()-1) + " active thread resolving dns") #thread debug 
 
     DnsDisConnection.close()
     PowerDnsConnection.close()
