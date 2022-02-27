@@ -16,7 +16,7 @@ BufferSize = 512
 
 
 DnsDisConnection = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-DnsDisConnection.bind(DnsDistAddress)   #connects to a port not in use
+DnsDisConnection.bind(DnsDistAddress)   #opens a connection to a port not in use
 
 while 1:
 
