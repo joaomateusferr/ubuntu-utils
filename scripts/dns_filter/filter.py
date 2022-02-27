@@ -1,7 +1,44 @@
 import socket
+import threading
 from dnslib import DNSRecord
 from dnslib import A    #ipv4
 from dnslib import AAAA #ipv6
+
+def ProcessDNSQuery(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, DnsQueryAddress):
+    
+    PowerDnsConnection.send(DnsQuery)
+    DnsResponse, DnsResponseAddress = PowerDnsConnection.recvfrom(BufferSize)
+
+    DecodedDnsResponse = DNSRecord.parse(DnsResponse)
+
+    #test only
+    DnsQueryName = DecodedDnsResponse.questions[0].qname
+    print(str(DnsQueryName))
+
+    DnsQueryNameToModify = "br.yahoo.com"
+
+    if DnsQueryName == DnsQueryNameToModify:
+        NeedModifications = True
+        ModificationType = "BLOCK"
+    else:
+        NeedModifications = False
+
+    if NeedModifications == True:
+
+        if ModificationType == "BLOCK":
+
+            for DnsResponse in DecodedDnsResponse.rr:
+
+                if DnsResponse.rtype == 1:
+                    DnsResponse.rdata = A("127.0.0.1")  #localhost ipv4
+                elif DnsResponse.rtype == 28:
+                    DnsResponse.rdata = AAAA("::1") #localhost ipv6
+
+            ModifiedDnsResponse = bytes(DecodedDnsResponse.pack())
+            DnsDisConnection.sendto(ModifiedDnsResponse, DnsQueryAddress)
+        else :
+            DnsDisConnection.sendto(DnsResponse, DnsQueryAddress)
+
 
 def main():
 
@@ -21,43 +58,13 @@ def main():
     PowerDnsConnection = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     PowerDnsConnection.connect(PowerDnsAddress) #connects to a port already in use
 
-    while 1:
+    while True:
 
-        DnsQuery, DnsQueryAddress = DnsDisConnection.recvfrom(BufferSize)  
+        DnsQuery, DnsQueryAddress = DnsDisConnection.recvfrom(BufferSize)
 
-        PowerDnsConnection.send(DnsQuery)
-        DnsResponse, DnsResponseAddress = PowerDnsConnection.recvfrom(BufferSize)
+        ProcessDNSQueryThread = threading.Thread(target=ProcessDNSQuery, args=(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, DnsQueryAddress))
+        ProcessDNSQueryThread.start()  
 
-        DecodedDnsResponse = DNSRecord.parse(DnsResponse)
-
-        #test only
-        DnsQueryName = DecodedDnsResponse.questions[0].qname
-        print(str(DnsQueryName))
-
-        DnsQueryNameToModify = "br.yahoo.com"
-
-        if DnsQueryName == DnsQueryNameToModify:
-            NeedModifications = True
-            ModificationType = "BLOCK"
-        else:
-            NeedModifications = False
-
-        if NeedModifications == True:
-
-            if ModificationType == "BLOCK":
-
-                for DnsResponse in DecodedDnsResponse.rr:
-
-                    if DnsResponse.rtype == 1:
-                        DnsResponse.rdata = A("127.0.0.1")  #localhost ipv4
-                    elif DnsResponse.rtype == 28:
-                        DnsResponse.rdata = AAAA("::1") #localhost ipv6
-
-                ModifiedDnsResponse = bytes(DecodedDnsResponse.pack())
-                DnsDisConnection.sendto(ModifiedDnsResponse, DnsQueryAddress)
-
-        else :
-            DnsDisConnection.sendto(DnsResponse, DnsQueryAddress)
 
     DnsDisConnection.close()
     PowerDnsConnection.close()
