@@ -1,0 +1,7 @@
+dig @127.0.0.1 google.com -p 5050
+dig AAAA  @127.0.0.1 google.com -p 5050
+
+dig @127.0.0.1 br.yahoo.com -p 5050
+
+sock_gateway.connect((gateway, port_gateway))
+print(vars(d.questions[0]))

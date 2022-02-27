@@ -1,8 +1,0 @@
-sudo apt install python3-pip
-apt-get install python-dnspython
-sudo apt-get install python3-scapy
-sudo apt install python3-dnslib
-dig @127.0.0.1 google.com -p 2525
-
-sock_gateway.connect((gateway, port_gateway))
-print(vars(d.questions[0]))
