@@ -57,16 +57,20 @@ def main():
     PowerDnsConnection = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     PowerDnsConnection.connect(PowerDnsAddress) #connects to a port already in use
 
-    while True:
+    try:
 
-        DnsQuery, DnsQueryAddress = DnsDisConnection.recvfrom(BufferSize)
+        while True:
 
-        ProcessDNSQueryThread = threading.Thread(target=ProcessDNSQuery, args=(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, DnsQueryAddress))
-        ProcessDNSQueryThread.start()
+            DnsQuery, DnsQueryAddress = DnsDisConnection.recvfrom(BufferSize)
 
-        #print(str(threading.active_count()-1) + " active thread resolving dns") #thread debug 
+            ProcessDNSQueryThread = threading.Thread(target=ProcessDNSQuery, args=(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, DnsQueryAddress))
+            ProcessDNSQueryThread.start()
 
-    DnsDisConnection.close()
-    PowerDnsConnection.close()
+            #print(str(threading.active_count()-1) + " active thread resolving dns") #thread debug
+
+    except (KeyboardInterrupt, SystemExit): #handles CTRL + C and OS kil 
+
+        DnsDisConnection.close()
+        PowerDnsConnection.close()
 
 main()
