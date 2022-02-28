@@ -3,6 +3,8 @@
 #This script requires user input and it's based on the digitalocean article below
 #https://www.digitalocean.com/community/tutorials/how-to-install-mongodb-on-ubuntu-20-04
 
+#sudo apt install curl
+
 if [ $(id -u) -ne 0 ]; then #this screipt equire root privileges (root id is 0)
     echo 'No root privileges detected!'
     echo 'Please, run this script as root'
