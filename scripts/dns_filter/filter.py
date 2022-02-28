@@ -68,7 +68,7 @@ def main():
 
             #print(str(threading.active_count()-1) + " active thread resolving dns") #thread debug
 
-    except (KeyboardInterrupt, SystemExit): #handles CTRL + C and OS kil 
+    except (KeyboardInterrupt, SystemExit): #handles ctrl + c and kil
 
         DnsDisConnection.close()
         PowerDnsConnection.close()
