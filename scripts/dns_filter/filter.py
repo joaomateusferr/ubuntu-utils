@@ -11,33 +11,39 @@ def ProcessDNSQuery(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, 
 
     DecodedDnsResponse = DNSRecord.parse(DnsResponse)
 
-    DnsQueryName = DecodedDnsResponse.questions[0].qname
-    
-    print(str(DnsQueryName)) #debug only
+    try:
 
-    DnsQueryNameToModify = "br.yahoo.com"
+        DnsQueryName = DecodedDnsResponse.questions[0].qname
+        print(str(DnsQueryName)) #debug only
+        
+        DnsQueryNameToModify = "br.yahoo.com"
 
-    if DnsQueryName == DnsQueryNameToModify:
-        NeedModifications = True
-        ModificationType = "BLOCK"
-    else:
-        NeedModifications = False
+        if DnsQueryName == DnsQueryNameToModify:
+            NeedModifications = True
+            ModificationType = "BLOCK"
+        else:
+            NeedModifications = False
 
-    if NeedModifications == True:
+        if NeedModifications == True:
 
-        if ModificationType == "BLOCK":
+            if ModificationType == "BLOCK":
 
-            for DnsResponse in DecodedDnsResponse.rr:
+                for DnsResponse in DecodedDnsResponse.rr:
 
-                if DnsResponse.rtype == 1:
-                    DnsResponse.rdata = A("127.0.0.1")  #localhost ipv4
-                elif DnsResponse.rtype == 28:
-                    DnsResponse.rdata = AAAA("::1") #localhost ipv6
+                    if DnsResponse.rtype == 1:
+                        DnsResponse.rdata = A("127.0.0.1")  #localhost ipv4
+                    elif DnsResponse.rtype == 28:
+                        DnsResponse.rdata = AAAA("::1") #localhost ipv6
 
-            ModifiedDnsResponse = bytes(DecodedDnsResponse.pack())
-            DnsDisConnection.sendto(ModifiedDnsResponse, DnsQueryAddress)
+                ModifiedDnsResponse = bytes(DecodedDnsResponse.pack())
+                DnsDisConnection.sendto(ModifiedDnsResponse, DnsQueryAddress)
         else :
+
             DnsDisConnection.sendto(DnsResponse, DnsQueryAddress)
+
+    except:
+
+        DnsDisConnection.sendto(DnsResponse, DnsQueryAddress) #only forward dns query if something goes wrong 
 
 def main():
 
