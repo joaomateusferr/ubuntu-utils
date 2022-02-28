@@ -1,38 +1,19 @@
 import socket
+import threading
 from dnslib import DNSRecord
 from dnslib import A    #ipv4
 from dnslib import AAAA #ipv6
 
-
-DnsDistIp = "127.0.0.1"
-DnsDistPort = 5050
-DnsDistAddress = (DnsDistIp, DnsDistPort)
-
-PowerDnsIp = "8.8.8.8"
-PowerDnsPort = 53
-PowerDnsAddress = (PowerDnsIp, PowerDnsPort)
-
-BufferSize = 512
-
-
-DnsDisConnection = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-DnsDisConnection.bind(DnsDistAddress)   #connects to a port not in use
-
-while 1:
-
-    DnsQuery, DnsQueryAddress = DnsDisConnection.recvfrom(BufferSize)  
-
-    PowerDnsConnection = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    PowerDnsConnection.connect(PowerDnsAddress) #connects to a port already in use
+def ProcessDNSQuery(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, DnsQueryAddress):
+    
     PowerDnsConnection.send(DnsQuery)
     DnsResponse, DnsResponseAddress = PowerDnsConnection.recvfrom(BufferSize)
-    PowerDnsConnection.close()
 
     DecodedDnsResponse = DNSRecord.parse(DnsResponse)
 
-    #test only
     DnsQueryName = DecodedDnsResponse.questions[0].qname
-    print(str(DnsQueryName))
+    
+    print(str(DnsQueryName)) #debug only
 
     DnsQueryNameToModify = "br.yahoo.com"
 
@@ -55,8 +36,41 @@ while 1:
 
             ModifiedDnsResponse = bytes(DecodedDnsResponse.pack())
             DnsDisConnection.sendto(ModifiedDnsResponse, DnsQueryAddress)
+        else :
+            DnsDisConnection.sendto(DnsResponse, DnsQueryAddress)
 
-    else :
-        DnsDisConnection.sendto(DnsResponse, DnsQueryAddress)
+def main():
 
-DnsDisConnection.close()
+    DnsDistIp = "127.0.0.1"
+    DnsDistPort = 5050
+    DnsDistAddress = (DnsDistIp, DnsDistPort)
+
+    PowerDnsIp = "8.8.8.8"
+    PowerDnsPort = 53
+    PowerDnsAddress = (PowerDnsIp, PowerDnsPort)
+
+    BufferSize = 512
+
+    DnsDisConnection = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    DnsDisConnection.bind(DnsDistAddress)   #opens a connection to a port not in use
+
+    PowerDnsConnection = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    PowerDnsConnection.connect(PowerDnsAddress) #connects to a port already in use
+
+    try:
+
+        while True:
+
+            DnsQuery, DnsQueryAddress = DnsDisConnection.recvfrom(BufferSize)
+
+            ProcessDNSQueryThread = threading.Thread(target=ProcessDNSQuery, args=(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, DnsQueryAddress))
+            ProcessDNSQueryThread.start()
+
+            #print(str(threading.active_count()-1) + " active thread resolving dns") #thread debug
+
+    except (KeyboardInterrupt, SystemExit): #handles ctrl + c and kil
+
+        DnsDisConnection.close()
+        PowerDnsConnection.close()
+
+main()
