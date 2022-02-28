@@ -33,7 +33,6 @@ else
             a2dismod mpm_worker
             a2enmod  mpm_prefork
             a2enmod  rewrite
-            a2enmod  $NEWER_VERSION_INSTALLED
 
             PHP_INI_PATH="$PHP_DIR$NEWER_VERSION_INSTALLED/apache2/php.ini"
 
