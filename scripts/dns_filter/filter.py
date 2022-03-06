@@ -1,8 +1,9 @@
 import socket
 import threading
 from dnslib import DNSRecord
-from dnslib import A    #ipv4
-from dnslib import AAAA #ipv6
+from dnslib import A     #ipv4
+from dnslib import AAAA  #ipv6
+from dnslib import CNAME #redirection
 
 def ProcessDNSQuery(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, DnsQueryAddress):
     
@@ -14,13 +15,11 @@ def ProcessDNSQuery(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, 
     try:
 
         DnsQueryName = DecodedDnsResponse.questions[0].qname
-        print(str(DnsQueryName)) #debug only
-        
         DnsQueryNameToModify = "br.yahoo.com"
 
         if DnsQueryName == DnsQueryNameToModify:
             NeedModifications = True
-            ModificationType = "BLOCK"
+            ModificationType = "REMOVE"
         else:
             NeedModifications = False
 
@@ -32,11 +31,55 @@ def ProcessDNSQuery(DnsDisConnection, PowerDnsConnection, BufferSize, DnsQuery, 
 
                     if DnsResponse.rtype == 1:
                         DnsResponse.rdata = A("127.0.0.1")  #localhost ipv4
+                        DnsResponse.ttl = 1
                     elif DnsResponse.rtype == 28:
                         DnsResponse.rdata = AAAA("::1") #localhost ipv6
+                        DnsResponse.ttl = 1
 
-                ModifiedDnsResponse = bytes(DecodedDnsResponse.pack())
-                DnsDisConnection.sendto(ModifiedDnsResponse, DnsQueryAddress)
+            elif ModificationType == "GOOGLE_SAFE_SEARCH":
+
+                for DnsResponse in DecodedDnsResponse.rr:
+
+                    if DnsResponse.rtype == 1:
+                        DnsResponse.rdata = A("216.239.38.120")
+                        DnsResponse.ttl = 1
+                    elif DnsResponse.rtype == 28:
+                        DnsResponse.rdata = AAAA("2001:4860:4802:32::78")
+                        DnsResponse.ttl = 1
+                    elif DnsResponse.rtype == 5:
+                        DnsResponse.rdata = CNAME("forcesafesearch.google.com") #redirect
+                        DnsResponse.ttl = 1
+
+            elif ModificationType == "REMOVE":
+
+                for DnsResponse in list (DecodedDnsResponse.rr):
+
+                    if DnsResponse.rtype == 1:
+                        DecodedDnsResponse.rr.remove(DnsResponse)
+                    elif DnsResponse.rtype == 28:
+                        DecodedDnsResponse.rr.remove(DnsResponse)
+
+            elif "CUSTOM=A=" in ModificationType:
+
+                Target = ModificationType[9:]
+
+                if ":" in Target :
+                    TargetIpType = "ipv6"
+                else :
+                    TargetIpType = "ipv4"
+
+                for DnsResponse in DecodedDnsResponse.rr:
+
+                    if DnsResponse.rtype == 1 and TargetIpType == "ipv4" :
+                        DnsResponse.rdata = A(Target)
+                        DnsResponse.ttl = 1
+                    elif DnsResponse.rtype == 1 and TargetIpType == "ipv6" :
+                        DnsResponse.rdata = AAAA(Target)
+                        DnsResponse.ttl = 1
+
+            ModifiedDnsResponse = bytes(DecodedDnsResponse.pack())
+            DnsDisConnection.sendto(ModifiedDnsResponse, DnsQueryAddress)
+
         else :
 
             DnsDisConnection.sendto(DnsResponse, DnsQueryAddress)
