@@ -1,1 +1,3 @@
-return{'a.com', 'b.com', 'c.com'}
+return{'google.com',
+       
+       'blog.powerdns.com'}
