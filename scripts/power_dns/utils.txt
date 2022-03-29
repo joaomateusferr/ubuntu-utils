@@ -1,3 +1,0 @@
-Redis na frente do mongo -> https://www.sitepoint.com/caching-a-mongodb-database-with-redis/
-Redis lua -> https://github.com/nrk/redis-lua
-Efficient & optional filtering of domains in Recursor 4.0.0 -> https://blog.powerdns.com/2016/01/19/efficient-optional-filtering-of-domains-in-recursor-4-0-0/
