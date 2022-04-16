@@ -16,4 +16,4 @@ else
     apt install docker-ce
 fi
 
-#run "systemctl status docker" to check if docker is active
+#run "sudo systemctl status docker" to check if docker is active
