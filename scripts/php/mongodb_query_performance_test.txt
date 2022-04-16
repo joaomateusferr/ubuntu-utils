@@ -1,0 +1,21 @@
+
+
+use general
+db.ipgeo.find({_id: 29354631}).explain("executionStats")
+db.ipgeo.status() -> 3047424 bytes - 3,047424 MB
+
+use geoip
+db.ipsus.find({$and:[{start:{$lte:18350086}},{end:{$gte:18350086}}]}).explain("executionStats")
+db.ipsus.storageSize() -> 32768 bytes - 0,032768 MB
+
+use  ipgeo
+db.ipsus.find().sort( {"start":1} ).skip(db.ipsus.count() / 2).limit(1)
+
+Results:
+Get Median:            0.00082588195800781
+Median Query:          0.00055503845214844
+Sort Ascending Query:  0.00052905082702637
+Sort Descending Query: 0.00053691864013672
+Standard Query:        0.0016419887542725
+
+
