@@ -11,3 +11,4 @@ else
 fi
 
 #run "sudo systemctl status ssh" to check if ssh is active
+#how to use "ssh userName@Your-server-name-IP"
