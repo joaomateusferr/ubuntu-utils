@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 PRODUCTION_ENVIRONMENT=$1
@@ -15,9 +14,9 @@ else
 
     apt-get update
 
-    sudo apt-get install apache2 php libapache2-mod-php
-    sudo apt-get install php-soap php-xml php-curl php-opcache php-gd php-sqlite3 php-mbstring #php-mysql
-    sudo apt install git
+    apt-get install apache2 php8.1 libapache2-mod-php8.1 #php 8.1
+    #apt-get install apache2 php libapache2-mod-php #php 7.4
+    apt-get install php-soap php-xml php-curl php-opcache php-gd php-sqlite3 php-mbstring #php-mysql
 
     if [ ! -e $PHP_DIR ];then
         echo 'PHP not installed'
