@@ -12,7 +12,9 @@ else
     curl -fsSL https://www.mongodb.org/static/pgp/server-4.4.asc | sudo apt-key add -
     apt-key list
     echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/4.4 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-4.4.list
+    #echo "deb http://security.ubuntu.com/ubuntu impish-security main" | sudo tee /etc/apt/sources.list.d/impish-security.list  #for ubuntu 22.04
     apt update
+    #apt-get install libssl1.1 #for ubuntu 22.04
     apt install mongodb-org
     systemctl start mongod.service
 fi
