@@ -1,0 +1,2 @@
+https://unix.stackexchange.com/questions/75547/how-to-get-proccesses-currently-running-semaphores-by-proc
+for pid in $( for semid in $( sudo ipcs -s | awk '/0x/{ print $2 }' ); do sudo ipcs -s -i $semid | tail -2 | head -1 | awk '{print $5}'; done | sort -u ); do ps uh -p $pid; done
