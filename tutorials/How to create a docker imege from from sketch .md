@@ -1,4 +1,4 @@
-# How to create and use a docker imege
+# How to create and use a docker imeges and container
 
 ## Install docker
 
