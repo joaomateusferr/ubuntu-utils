@@ -1,5 +1,15 @@
 # How to create and use a docker imege
 
+## Install docker
+
+Take a look at [install_docker.sh](../scripts/install_docker.sh)
+
+Check if docker is active
+
+```
+sudo systemctl status docker
+```
+
 ## Selecting the base image
 
 Go to docker hub and choose the base image, in my case I chose ubuntu latest, and then create a folder with to create the image, navigate to the newly created folder and create a file named Dockerfile and add the desired settings as in the example below.
@@ -42,9 +52,9 @@ To create a container and start it for the first time with the newly created ima
 docker run -t -d -p 8080:80 --name server ubuntu-server
 ```
 
-## Manage containers
+## Manage containers and images
 
-To check running containers use the command below.
+To check running containers, use the command below.
 
 ```
 docker ps
@@ -67,13 +77,13 @@ If you are using **Ubuntu**, update the repositories list before doing anything 
 apt-get update
 ```
 
-To stop a container use the command below.
+To stop a container, use the command below.
 
 ```
 docker stop server
 ```
 
-To check if the container has stopped running use the commands below.
+To check if the container has stopped running, use the commands below.
 
 ```
 docker ps
@@ -86,7 +96,7 @@ CONTAINER ID   IMAGE           COMMAND   CREATED          STATUS                
 2f50319f880d   ubuntu-server   "bash"    38 minutes ago   Exited (137) 4 minutes ago             server
 ```
 
-To start again an already created container use the command below.
+To start again an already created container, use the command below.
 
 ```
 docker start server
@@ -94,13 +104,13 @@ docker start server
 
 It's worth remembering that if you haven't configured your coontainer's services to start automatically, either through the image cmd or through the service settings in the container, you'll have to open the container using exec and start the services manually.
 
-To permanently delete a container use the command below.
+To permanently delete a container, use the command below.
 
 ```
 docker rm server
 ```
 
-To permanently delete a container use the command below.
+To permanently delete a image, use the command below.
 
 ```
 docker rmi server-ubuntu
