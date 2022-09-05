@@ -12,31 +12,7 @@ sudo systemctl status docker
 
 ## Selecting the base image
 
-Go to docker hub and choose the base image, in my case I chose ubuntu latest, and then create a folder with to create the image, navigate to the newly created folder and create a file named Dockerfile and add the desired settings as in the example below.
-
-The code below is just a simple example.
-
-```
-FFROM ubuntu
-
-RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive TZ=America/Sao_Paulo apt-get -y install tzdata
-RUN apt-get -y install vim nano apache2 php8.1 libapache2-mod-php8.1 php-soap php-xml php-curl php-opcache php-gd php-sqlite3 php-mbstring
-
-COPY ./deploy-config.sh /
-RUN sh /deploy-config.sh
-RUN rm /deploy-config.sh
-
-RUN service apache2 restart
-
-RUN chmod -R 777 /var/www/html/
-RUN echo "<?php phpinfo(); ?>" >> /var/www/html/index.php
-RUN rm -rf /var/www/html/index.html
-
-EXPOSE 80
-
-CMD ["bash", "apachectl", "-D", "FOREGROUND"]
-```
+Go to docker hub and choose the base image, in my case I chose ubuntu latest, and then create a folder to to set up the image, navigate to the newly created folder and create a file named Dockerfile then, add the desired settings just like it was done in the [php-image](../scripts/docker/php-image/) forder.
 
 If you want to use a pre-made image from docker hub, use the command below and skip the build image session.
 
@@ -46,7 +22,7 @@ docker pull ubuntu:latest
 
 ## Build image
 
-Now to build the image just run the command below.
+Now to build the image just run the command:
 
 ```
 docker build -t ubuntu-server .
@@ -63,7 +39,7 @@ ubuntu-server   latest    f8c5de33a26d   About a minute ago   77.8MB
 
 ## Create container
 
-To create a container and start it for the first time with the newly created image on port 8080 of the host machine exposing port 80 from the container use the command below.
+To create a container and start it for the first time with the newly created image on port 8080 of the host machine exposing port 80 from the container use the command:
 
 ```
 docker run -t -d -p 8080:80 --name server ubuntu-server
@@ -71,7 +47,7 @@ docker run -t -d -p 8080:80 --name server ubuntu-server
 
 ## Manage containers and images
 
-To check running containers, use the command below.
+To check running containers:
 
 ```
 docker ps
@@ -80,7 +56,7 @@ CONTAINER ID   IMAGE           COMMAND   CREATED          STATUS          PORTS 
 2f50319f880d   ubuntu-server   "bash"    16 minutes ago   Up 16 minutes   0.0.0.0:8080->80/tcp, :::8080->80/tcp   server
 ```
 
-To open the newly created container using a bash terminal you can use the command below.
+To open the newly created container using a bash terminal you can use:
 
 ```
 docker exec -it server bash
@@ -88,19 +64,19 @@ docker exec -it server bash
 
 **Alpine** based images don't use bash in this case use **sh** instead.
 
-If you are using **Ubuntu**, update the repositories list before doing anything else by running the command below.
+If you are using **Ubuntu**, update the repositories list before doing anything else by running:
 
 ```
 apt-get update
 ```
 
-To stop a container, use the command below.
+To stop a container use:
 
 ```
 docker stop server
 ```
 
-To check if the container has stopped running, use the commands below.
+To check if the container has stopped running, use the commands:
 
 ```
 docker ps
@@ -113,7 +89,7 @@ CONTAINER ID   IMAGE           COMMAND   CREATED          STATUS                
 2f50319f880d   ubuntu-server   "bash"    38 minutes ago   Exited (137) 4 minutes ago             server
 ```
 
-To start again an already created container, use the command below.
+To start again an already created container, use:
 
 ```
 docker start server
