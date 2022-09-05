@@ -12,7 +12,7 @@ sudo systemctl status docker
 
 ## Selecting the base image
 
-Go to docker hub and choose the base image, in my case I chose ubuntu latest, and then create a folder to to set up the image, navigate to the newly created folder and create a file named Dockerfile then, add the desired settings just like it was done in the [php-image](../scripts/docker/php-image/) forder.
+Go to docker hub and choose the base image, in my case I chose ubuntu latest, then create a folder to to set up the image, browse to the newly created folder and create a file named Dockerfile and add the desired settings. Just like it was done in the [php-image](../scripts/docker/php-image/) forder.
 
 If you want to use a pre-made image from docker hub, use the command below and skip the build image session.
 
