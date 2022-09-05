@@ -17,8 +17,25 @@ Go to docker hub and choose the base image, in my case I chose ubuntu latest, an
 The code below is just a simple example.
 
 ```
-FROM ubuntu
-CMD ["bash"]
+FFROM ubuntu
+
+RUN apt-get update
+RUN DEBIAN_FRONTEND=noninteractive TZ=America/Sao_Paulo apt-get -y install tzdata
+RUN apt-get -y install vim nano apache2 php8.1 libapache2-mod-php8.1 php-soap php-xml php-curl php-opcache php-gd php-sqlite3 php-mbstring
+
+COPY ./deploy-config.sh /
+RUN sh /deploy-config.sh
+RUN rm /deploy-config.sh
+
+RUN service apache2 restart
+
+RUN chmod -R 777 /var/www/html/
+RUN echo "<?php phpinfo(); ?>" >> /var/www/html/index.php
+RUN rm -rf /var/www/html/index.html
+
+EXPOSE 80
+
+CMD ["bash", "apachectl", "-D", "FOREGROUND"]
 ```
 
 If you want to use a pre-made image from docker hub, use the command below and skip the build image session.
