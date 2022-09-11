@@ -21,7 +21,7 @@ else
         sudo usermod -aG docker $MACHINE_USER
     done
 
-    echo 'Now, log out and log back in so that your group membership is re-evaluated and then you can use docker without sudo'
+    echo 'Now, restart and log back in so that your group membership is re-evaluated and then you can use docker without sudo'
 fi
 
 #run "sudo systemctl status docker" to check if docker is active
