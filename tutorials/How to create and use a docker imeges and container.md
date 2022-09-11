@@ -56,6 +56,15 @@ CONTAINER ID   IMAGE           COMMAND                  CREATED         STATUS  
 8a9f94338edb   ubuntu-server   "bash apachectl -D F…"   3 minutes ago   Up 3 minutes   443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp   server
 ```
 
+To check running volumes:
+
+```
+docker volume ls
+
+DRIVER    VOLUME NAME
+local     6571cdd48877686c7020bde06791b024cde3aa8b5a70922f6416cb1bf3dcf7db
+```
+
 To open the newly created container using a bash terminal you can use:
 
 ```
