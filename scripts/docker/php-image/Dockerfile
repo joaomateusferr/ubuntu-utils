@@ -8,12 +8,13 @@ COPY ./deploy-config.sh /
 RUN sh /deploy-config.sh
 RUN rm /deploy-config.sh
 
-RUN service apache2 restart
-
 RUN chmod -R 777 /var/www/html/
 RUN echo "<?php phpinfo(); ?>" >> /var/www/html/index.php
 RUN rm -rf /var/www/html/index.html
 
 EXPOSE 80
+EXPOSE 443
+
+VOLUME /var/www/html/
 
 CMD ["bash", "apachectl", "-D", "FOREGROUND"]
