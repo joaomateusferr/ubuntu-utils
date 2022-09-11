@@ -42,7 +42,7 @@ ubuntu-server   latest    f8c5de33a26d   About a minute ago   77.8MB
 To create a container and start it for the first time with the newly created image on port 8080 of the host machine exposing port 80 from the container use the command:
 
 ```
-docker run -t -d -p 8080:80 --name server ubuntu-server
+docker run -t -d -p 8080:80 -v /home/$USER/Sites:/var/www/html --name server ubuntu-server
 ```
 
 ## Manage containers and images
@@ -52,8 +52,8 @@ To check running containers:
 ```
 docker ps
 
-CONTAINER ID   IMAGE           COMMAND   CREATED          STATUS          PORTS                                   NAMES
-2f50319f880d   ubuntu-server   "bash"    16 minutes ago   Up 16 minutes   0.0.0.0:8080->80/tcp, :::8080->80/tcp   server
+CONTAINER ID   IMAGE           COMMAND                  CREATED         STATUS         PORTS                                            NAMES
+8a9f94338edb   ubuntu-server   "bash apachectl -D F…"   3 minutes ago   Up 3 minutes   443/tcp, 0.0.0.0:8080->80/tcp, :::8080->80/tcp   server
 ```
 
 To open the newly created container using a bash terminal you can use:
@@ -85,8 +85,8 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 
 docker ps -a
 
-CONTAINER ID   IMAGE           COMMAND   CREATED          STATUS                       PORTS     NAMES
-2f50319f880d   ubuntu-server   "bash"    38 minutes ago   Exited (137) 4 minutes ago             server
+CONTAINER ID   IMAGE           COMMAND                  CREATED         STATUS                       PORTS     NAMES
+8a9f94338edb   ubuntu-server   "bash apachectl -D F…"   7 minutes ago   Exited (137) 8 seconds ago             server
 ```
 
 To start again an already created container, use:
