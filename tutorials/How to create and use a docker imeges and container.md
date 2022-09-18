@@ -2,7 +2,7 @@
 
 ## Install docker
 
-Take a look at [install_docker.sh](../scripts/install_docker.sh)
+Take a look at [install_docker.sh](../scripts/docker/install_docker.sh)
 
 Check if docker is active
 
