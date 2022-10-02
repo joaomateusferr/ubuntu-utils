@@ -1,11 +1,14 @@
 <?php
 
-$Ip = isset($argv[1]) ? $argv[1] : exit("IP!\n");
+$Ip = isset($argv[1]) ? (is_numeric($argv[1]) ? intval($argv[1]) : ip2long($argv[1])) : exit("Fill IP!\n");
+
+if(!$Ip)
+    exit("Invalid IP!\n");
+
+var_dump($Ip);exit;
 
 $Redis = new \Redis();
 $Redis->connect('127.0.0.1', 6379, 3.5);
-
-//$All = $Redis->zRange('geo-ip-v4', 0, -1, true);
 
 $GeoIp = $Redis->zRangeByScore('geo-ip-v4', $Ip, '+inf', ['withscores' => TRUE, 'limit' => [0, 1]]);
 
@@ -29,5 +32,4 @@ $Redis->close();
 
 var_dump($Result);
 
-//var_dump($All);
 ?>
