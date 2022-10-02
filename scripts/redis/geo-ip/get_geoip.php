@@ -5,8 +5,6 @@ $Ip = isset($argv[1]) ? (is_numeric($argv[1]) ? intval($argv[1]) : ip2long($argv
 if(!$Ip)
     exit("Invalid IP!\n");
 
-var_dump($Ip);exit;
-
 $Redis = new \Redis();
 $Redis->connect('127.0.0.1', 6379, 3.5);
 
