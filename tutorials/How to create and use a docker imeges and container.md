@@ -73,8 +73,6 @@ docker exec -it server bash
 
 **Alpine** based images don't use bash in this case use **sh** instead.
 
-If you are using **Ubuntu**, update the repositories list before doing anything else by running:
-
 ```
 apt-get update
 ```
@@ -110,6 +108,18 @@ To permanently delete a container, use the command below.
 
 ```
 docker rm server
+```
+
+To stop all containers on a machine, use the command below
+
+```
+docker stop $(docker ps -a -q)
+```
+
+To permanently delete all containers on a machine, use the command below
+
+```
+docker rm $(docker ps -a -q)
 ```
 
 To permanently delete a image, use the command below.
