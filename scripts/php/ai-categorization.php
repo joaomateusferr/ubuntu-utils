@@ -1,0 +1,164 @@
+<?php
+
+abstract class AICategorization {
+
+    protected string $Model = 'gpt-5-nano';
+    protected bool $Store = false;
+    protected string $ApiToken;
+    protected string $Content;
+
+
+    public function __construct(string $ApiToken){
+
+        $this->ApiToken = $ApiToken;
+
+    }
+
+    protected function setContent(string $Content) : void {
+
+        $this->Content = $Content;
+
+    }
+
+    abstract protected function buildReasoning() : string;
+
+    protected function buildPromptInput() : array {
+
+        return
+        [
+            [
+                "role" => "system",
+                "content" => [
+                    [
+                        "type" => "input_text",
+                        "text" => $this->buildReasoning()
+                    ]
+                ]
+            ],
+            [
+                "role" => "user",
+                "content" => [
+                    [
+                        "type" => "input_text",
+                        "text" => $this->Content
+                    ]
+                ]
+            ]
+        ];
+
+    }
+
+    protected function buildPrompt() : array {
+
+        return [
+            "model" => $this->Model,
+            "store" => $this->Store,
+            "input" => $this->buildPromptInput(),
+        ];
+
+    }
+
+    protected function sendRequest(array $Prompt) : ?array {
+
+        $Curl = curl_init();
+        $Url = "https://api.openai.com/v1/responses";
+        curl_setopt($Curl, CURLOPT_URL, $Url);
+        curl_setopt($Curl, CURLOPT_HTTPHEADER, ["Content-Type: application/json","Authorization: Bearer ".$this->ApiToken]);
+        curl_setopt($Curl, CURLOPT_POST, true);
+        curl_setopt($Curl, CURLOPT_POSTFIELDS, json_encode($Prompt));
+        curl_setopt($Curl, CURLOPT_RETURNTRANSFER, true);
+        $Response = curl_exec($Curl);
+        $HttpCode = curl_getinfo($Curl, CURLINFO_HTTP_CODE);
+        curl_close($Curl);
+
+
+        if(empty($Response))
+            return null;
+
+        if($HttpCode != 200){
+
+            error_log($Response);
+            return null;
+
+        }
+
+        if(!json_validate($Response))
+            return null;
+
+        return json_decode($Response, true);
+
+    }
+
+    abstract protected function parseResponse(array $Response) : ?array;
+
+    public function categorize(string $Content) : ?array {
+
+        $this->setContent($Content);
+        $Prompt = $this->buildPrompt();
+        $Response = $this->sendRequest($Prompt);
+
+        if(is_null($Response))
+            return null;
+
+        return $this->parseResponse($Response);
+
+    }
+
+}
+
+class TransactionAICategorization extends AICategorization {
+
+    protected function getCategories() : array {
+
+        return [
+            'Alimentação',
+            'Benefícios',
+            'Bônus e PRL',
+            'Casa','Compras',
+            'Contas',
+            'Crédito e Financiamento',
+            'Cuidados Pessoais',
+            'Doações',
+            'Educação',
+            'Impostos e Tributos',
+            'Investimentos',
+            'Lazer e Entretenimento',
+            'Outra Categoria',
+            'Pets',
+            'Receita de Aluguel',
+            'Reembolso',
+            'Salário',
+            'Saque',
+            'Saúde',
+            'Seguro',
+            'Supermercado',
+            'Tarifas',
+            'Transferências',
+            'Transporte',
+            'Viagem'
+        ];
+
+    }
+
+    protected function buildReasoning() : string {
+
+        return 'A partir das categorias: '.implode(',',$this->getCategories()).'. Retornando somente o nome de uma categora na respoosta como devemos clasificaria o gasto com o nome:';
+
+    }
+
+    protected function parseResponse(array $Response) : ?array {
+
+        if(!isset($Response['output'][1]['content'][0]['text']))
+            return null;
+
+        return[trim($Response['output'][1]['content'][0]['text'])];
+
+    }
+
+}
+
+
+
+$AICategorization = new TransactionAICategorization('API-TOKEN');
+$Categories = $AICategorization->categorize('Netflix.com');
+var_dump($Categories);exit;
