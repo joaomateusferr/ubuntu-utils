@@ -123,7 +123,12 @@ final class TransactionAiCategorization extends AiWrapper {
 
     public function __construct(){
 
-        parent::__construct('TOKEN-HERE','gpt-4.1-nano',0.2);
+        $OpenaiApiKey =  getenv('OPENAI_API_KEY');
+
+        if(empty($OpenaiApiKey))
+            throw new Exception("Empty Openai Api Key");
+
+        parent::__construct($OpenaiApiKey,'gpt-4.1-nano',0.2);
 
     }
 
@@ -176,8 +181,18 @@ final class TransactionAiCategorization extends AiWrapper {
 
 }
 
+//shell - set env -> export OPENAI_API_KEY=""
 
 //$GLOBALS["DebugAiApiResponse"] = true;
-$AICategorization = new TransactionAiCategorization();
-$Categories = $AICategorization->categorize('netfix.com');
-echo $Categories[0]."\n";
+
+$Transaction = isset($argv[1]) ? $argv[1] : exit("Provide a transaction as a parameter!\n");
+
+try {
+
+    $AICategorization = new TransactionAiCategorization();
+    $Categories = $AICategorization->categorize($Transaction);
+    echo $Categories[0]."\n";
+
+} catch (Exception $Exception) {
+    echo $Exception->getMessage()."\n";
+}
