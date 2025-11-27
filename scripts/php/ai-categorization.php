@@ -1,16 +1,21 @@
 <?php
 
-abstract class AICategorization {
+abstract class AiWrapper {
 
-    protected string $Model = 'gpt-5-nano';
     protected bool $Store = false;
+    protected ?float $Temperature = null;
+    protected string $Model;
     protected string $ApiToken;
     protected string $Content;
 
 
-    public function __construct(string $ApiToken){
+    public function __construct(string $ApiToken, string $Model, ?float $Temperature = null){
 
         $this->ApiToken = $ApiToken;
+        $this->Model = $Model;
+
+        if(!is_null($Temperature))
+            $this->Temperature = $Temperature;
 
     }
 
@@ -50,11 +55,16 @@ abstract class AICategorization {
 
     protected function buildPrompt() : array {
 
-        return [
+        $Prompt = [
             "model" => $this->Model,
             "store" => $this->Store,
             "input" => $this->buildPromptInput(),
         ];
+
+        if(!is_null($this->Temperature))
+            $Prompt['temperature'] = $this->Temperature;
+
+        return $Prompt;
 
     }
 
@@ -85,6 +95,9 @@ abstract class AICategorization {
         if(!json_validate($Response))
             return null;
 
+        if(!empty($GLOBALS["DebugAiApiResponse"]))
+            error_log($Response);
+
         return json_decode($Response, true);
 
     }
@@ -106,9 +119,15 @@ abstract class AICategorization {
 
 }
 
-class TransactionAICategorization extends AICategorization {
+final class TransactionAiCategorization extends AiWrapper {
 
-    protected function getCategories() : array {
+    public function __construct(){
+
+        parent::__construct('TOKEN-HERE','gpt-4.1-nano',0.2);
+
+    }
+
+    private function getCategories() : array {
 
         return [
             'Alimentação',
@@ -148,17 +167,17 @@ class TransactionAICategorization extends AICategorization {
 
     protected function parseResponse(array $Response) : ?array {
 
-        if(!isset($Response['output'][1]['content'][0]['text']))
+        if(!isset($Response['output'][0]['content'][0]['text']))
             return null;
 
-        return[trim($Response['output'][1]['content'][0]['text'])];
+        return[trim($Response['output'][0]['content'][0]['text'])];
 
     }
 
 }
 
 
-
-$AICategorization = new TransactionAICategorization('API-TOKEN');
-$Categories = $AICategorization->categorize('Netflix.com');
-var_dump($Categories);exit;
+//$GLOBALS["DebugAiApiResponse"] = true;
+$AICategorization = new TransactionAiCategorization();
+$Categories = $AICategorization->categorize('netfix.com');
+echo $Categories[0]."\n";
