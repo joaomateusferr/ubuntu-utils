@@ -62,6 +62,10 @@ class CronSchedules {
 
     }
 
+    public function getJobs() : array {
+        return $this->Schedules;
+    }
+
     public function getContentArray() : array {
 
         $Result = [];
@@ -102,9 +106,7 @@ class CronManager {
 
         $Scripts = [];
 
-        foreach($this->Schedules as $Job){
-
-            var_dump($Job);exit;
+        foreach($this->Schedules->getJobs() as $Job){
 
             $HostMatches = $this->isWildcard($Job->getHost()) || $this->isWildcard($this->Host) || $Job->getHost() === $this->Host;
             $HourMatches   = $this->isWildcard($Job->getHour()) || $Job->getHour() === $this->Hour;
