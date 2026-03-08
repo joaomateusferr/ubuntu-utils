@@ -89,11 +89,11 @@ class CronManager {
     private string $Minute;
     private ?string $Host;
 
-    public function __construct(CronSchedules $Schedules, $Hour, int $Minute, ?string $Host = null) {
+    public function __construct(CronSchedules $Schedules, ?string $Hour = null, ?string $Minute = null, ?string $Host = null) {
 
         $this->Schedules = $Schedules;
-        $this->Hour = str_pad($Hour, 2, '0', STR_PAD_LEFT);
-        $this->Minute = str_pad($Minute, 2, '0', STR_PAD_LEFT);
+        $this->Hour = is_null($Hour) ? '*' : str_pad($Hour, 2, '0', STR_PAD_LEFT);
+        $this->Minute =  is_null($Minute) ? '*' : str_pad($Minute, 2, '0', STR_PAD_LEFT);
         $this->Host = is_null($Host) ? '*' : $Host;
 
     }
@@ -102,15 +102,15 @@ class CronManager {
         return $Value === '*';
     }
 
-    public function getScriptsToRun(): array {
+    public function getScripts(): array {
 
         $Scripts = [];
 
         foreach($this->Schedules->getJobs() as $Job){
 
             $HostMatches = $this->isWildcard($Job->getHost()) || $this->isWildcard($this->Host) || $Job->getHost() === $this->Host;
-            $HourMatches   = $this->isWildcard($Job->getHour()) || $Job->getHour() === $this->Hour;
-            $MinuteMatches = $this->isWildcard($Job->getMinute()) || $Job->getMinute() === $this->Minute;
+            $HourMatches   = $this->isWildcard($Job->getHour()) || $this->isWildcard($this->Hour)  || $Job->getHour() === $this->Hour;
+            $MinuteMatches = $this->isWildcard($Job->getMinute()) || $this->isWildcard($this->Minute) || $Job->getMinute() === $this->Minute;
 
             if ($HostMatches && $HourMatches && $MinuteMatches)
                 $Scripts = array_merge($Scripts, $Job->getScripts());
@@ -126,8 +126,9 @@ class CronManager {
 
 $Schedules = new CronSchedules();
 $Schedules->addJob(new CronJob(['test-1.php'], null, null, 'test-1'));
+$Schedules->addJob(new CronJob(['test-2.php'], null, 1, 'test-2'));
 
-$CronManager = new CronManager($Schedules, 0, 0);
-var_dump($CronManager->getScriptsToRun());
+$CronManager = new CronManager($Schedules);
+var_dump($CronManager->getScripts());
 
 
