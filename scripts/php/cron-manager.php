@@ -87,7 +87,7 @@ class CronManager {
     private CronSchedules $Schedules;
     private string $Hour;
     private string $Minute;
-    private ?string $Host;
+    private string $Host;
 
     public function __construct(CronSchedules $Schedules, ?string $Hour = null, ?string $Minute = null, ?string $Host = null) {
 
@@ -102,9 +102,9 @@ class CronManager {
         return $Value === '*';
     }
 
-    public function getScripts(): array {
+    private function getJobsToRun(): array {
 
-        $Scripts = [];
+        $Jobs = [];
 
         foreach($this->Schedules->getJobs() as $Job){
 
@@ -113,12 +113,40 @@ class CronManager {
             $MinuteMatches = $this->isWildcard($Job->getMinute()) || $this->isWildcard($this->Minute) || $Job->getMinute() === $this->Minute;
 
             if ($HostMatches && $HourMatches && $MinuteMatches)
-                $Scripts = array_merge($Scripts, $Job->getScripts());
+                $Jobs[] = $Job;
 
 
         }
 
+        return $Jobs;
+
+    }
+
+    public function getScriptsToRun() : array {
+
+        $Scripts = [];
+
+        foreach($this->getJobsToRun() as $Job){
+
+            $Scripts = array_merge($Scripts, $Job->getScripts());
+
+        }
+
         return $Scripts;
+
+    }
+
+    public function listJobsToRun() : array {
+
+        $Result = [];
+
+        foreach($this->getJobsToRun() as $Job){
+
+            $Result[] = $Job->getContentArray();
+
+        }
+
+        return $Result;
 
     }
 
@@ -129,6 +157,7 @@ $Schedules->addJob(new CronJob(['test-1.php'], null, null, 'test-1'));
 $Schedules->addJob(new CronJob(['test-2.php'], null, 1, 'test-2'));
 
 $CronManager = new CronManager($Schedules);
-var_dump($CronManager->getScripts());
+
+var_dump($CronManager->getScriptsToRun());
 
 
