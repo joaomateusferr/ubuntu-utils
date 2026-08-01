@@ -5,6 +5,7 @@ set -e
 REDIS_USER="admin"
 REDIS_PASS="SuperSecurePassword123"
 REDIS_IMAGE="redis:7.2"
+NODES=6
 
 NETWORK_NAME="redis-cluster-net"
 CLUSTER_DIR="$(pwd)/redis-cluster-data"
@@ -33,7 +34,8 @@ user default off
 user ${REDIS_USER} on >${REDIS_PASS} ~* &* +@all
 EOF
 
-for i in 1 2 3 4 5 6; do
+for i in $(seq 1 ${NODES}); do
+
   PORT=$((7000 + i))
   BUS_PORT=$((17000 + i))
 
@@ -62,7 +64,7 @@ sleep 5
 
 NODES_ANNOUNCED=""
 
-for i in 1 2 3 4 5 6; do
+for i in $(seq 1 ${NODES}); do
 
   PORT=$((7000 + i))
   NODES_ANNOUNCED="$NODES_ANNOUNCED $HOST_IP:$PORT"
@@ -72,8 +74,10 @@ done
 echo "Forming Redis Cluster..."
 docker run --rm -i --net host $REDIS_IMAGE redis-cli --user ${REDIS_USER} -a ${REDIS_PASS} --cluster create $NODES_ANNOUNCED --cluster-replicas 1 --cluster-yes
 
+TOTAL_PORTS=$((7000 + $NODES))
+
 echo ""
-echo "Nodes exposed in: $HOST_IP (Ports 7001 a 7006)"
+echo "Nodes exposed in: $HOST_IP (Ports 7001 a $TOTAL_PORTS)"
 echo "User: $REDIS_USER"
 echo "Password: $REDIS_PASS"
 echo ""
