@@ -1,11 +1,7 @@
 <?php
 
-$PkiDir = isset($argv[1]) ? $argv[1] : null;
-
-if (empty($PkiDir)) {
-    echo "Usage: php generate-ca-certificates.php <pki-dir>\n";
-    exit(2);
-}
+$PkiDir = isset($argv[1]) ? $argv[1] : exit;
+$OrganizationName = isset($argv[2]) ? $argv[2] : exit;
 
 if (!is_dir($PkiDir)) {
     echo "Error: $PkiDir is not a directory\n";
@@ -16,38 +12,36 @@ if (substr($PkiDir, -1) === '/')
     $PkiDir = substr($PkiDir, 0, -1);
 
 $DNRoot = [
-    "countryName"            => "BR",
-    "stateOrProvinceName"    => "SP",
-    "localityName"           => "Jundiaí",
-    "organizationName"       => "Joao",
-    "commonName"             => "Joao Root CA",
+    //"countryName"            => "BR",
+    //"stateOrProvinceName"    => "SP",
+    //"localityName"           => "Jundiaí",
+    "organizationName"       => "$OrganizationName",
+    "commonName"             => "$OrganizationName Root CA",
 ];
 
-$DNIntermediate = array_merge($DNRoot, ["commonName" => "Joao Intermediate CA"]);
-$DNIssuing      = array_merge($DNRoot, ["commonName" => "Joao Issuing CA"]);
+$DNIntermediate = array_merge($DNRoot, ["commonName" => "$OrganizationName Intermediate CA"]);
+$DNIssuing      = array_merge($DNRoot, ["commonName" => "$OrganizationName Issuing CA"]);
 
 $KeyConfig = ["private_key_bits" => 4096,"private_key_type" => OPENSSL_KEYTYPE_RSA];
 
-foreach (['root', 'intermediate', 'issuing'] as $CA) {
-
-    @mkdir("$PkiDir/$CA/private", 0777, true);
-    @mkdir("$PkiDir/$CA/certs", 0777, true);
-
-}
+@mkdir("$PkiDir/secrets", 0777, true);
+@mkdir("$PkiDir/certs", 0777, true);
+@mkdir("$PkiDir/passwords", 0777, true);
+@mkdir("$PkiDir/step", 0777, true);
 
 $CNFFilePath = "$PkiDir/temp.cnf";
 
 $CNFFileContent = "[ v3_ca ]
-basicConstraints = critical, CA:true
-keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+basicConstraints = critical, CA:true, pathlen:2
+keyUsage = critical, cRLSign, keyCertSign
 
 [ v3_intermediate_ca ]
 basicConstraints = critical, CA:true, pathlen:1
-keyUsage = critical, digitalSignature, cRLSign, keyCertSign
+keyUsage = critical, cRLSign, keyCertSign
 
 [ v3_issuing_ca ]
 basicConstraints = critical, CA:true, pathlen:0
-keyUsage = critical, digitalSignature, cRLSign, keyCertSign";
+keyUsage = critical, cRLSign, keyCertSign";
 
 file_put_contents($CNFFilePath, $CNFFileContent);
 
@@ -64,8 +58,9 @@ $RootCsr = openssl_csr_new($DNRoot, $RootPrivateKey, ["digest_alg" => "sha256"])
 $RootConfig = ["digest_alg" => "sha256", "x509_extensions" => "v3_ca", "config" => $CNFFilePath];
 $RootCert = openssl_csr_sign($RootCsr, null, $RootPrivateKey, $RootDuration, $RootConfig);
 
-openssl_pkey_export_to_file($RootPrivateKey, "$PkiDir/root/private/root_ca.key", $RootKeyPassphrase);
-openssl_x509_export_to_file($RootCert, "$PkiDir/root/certs/root_ca.crt");
+openssl_pkey_export_to_file($RootPrivateKey, "$PkiDir/secrets/root_ca_key", $RootKeyPassphrase);
+file_put_contents("$PkiDir/passwords/root_ca_password",$RootKeyPassphrase);
+openssl_x509_export_to_file($RootCert, "$PkiDir/certs/root_ca.crt");
 
 $IntermediateDuration = 3650; // 10 years
 
@@ -81,8 +76,9 @@ $IntermediateCsr = openssl_csr_new($DNIntermediate, $IntermediatePrivateKey, ["d
 $IntermediateConfig = ["digest_alg" => "sha256", "x509_extensions" => "v3_intermediate_ca", "config" => $CNFFilePath];
 $IntermediateCert = openssl_csr_sign($IntermediateCsr, $RootCert, $RootPrivateKey, $IntermediateDuration, $IntermediateConfig);
 
-openssl_pkey_export_to_file($IntermediatePrivateKey, "$PkiDir/intermediate/private/intermediate_ca.key", $IntermediateKeyPassphrase);
-openssl_x509_export_to_file($IntermediateCert, "$PkiDir/intermediate/certs/intermediate_ca.crt");
+openssl_pkey_export_to_file($IntermediatePrivateKey, "$PkiDir/secrets/intermediate_ca_key", $IntermediateKeyPassphrase);
+file_put_contents("$PkiDir/passwords/intermediate_ca_password", $IntermediateKeyPassphrase);
+openssl_x509_export_to_file($IntermediateCert, "$PkiDir/certs/intermediate_ca.crt");
 
 $IssuingDuration = 1825; // 5 years
 
@@ -98,9 +94,19 @@ $IssuingCsr = openssl_csr_new($DNIssuing, $IssuingPrivateKey, ["digest_alg" => "
 $IssuingConfig = ["digest_alg" => "sha256", "x509_extensions" => "v3_issuing_ca", "config" => $CNFFilePath];
 $IssuingCert = openssl_csr_sign($IssuingCsr, $IntermediateCert, $IntermediatePrivateKey, $IssuingDuration, $IssuingConfig);
 
+openssl_pkey_export_to_file($IssuingPrivateKey, "$PkiDir/secrets/issuing_ca_key", $IssuingKeyPassphrase);
+file_put_contents("$PkiDir/passwords/issuing_ca_password", $IssuingKeyPassphrase);
+openssl_x509_export_to_file($IssuingCert, "$PkiDir/certs/issuing_ca.crt");
 
-openssl_pkey_export_to_file($IssuingPrivateKey, "$PkiDir/issuing/private/issuing_ca.key", $IssuingKeyPassphrase);
-openssl_x509_export_to_file($IssuingCert, "$PkiDir/issuing/certs/issuing_ca.crt");
+$RootPem = file_get_contents("$PkiDir/certs/root_ca.crt");
+$IntermediatePem = file_get_contents("$PkiDir/certs/intermediate_ca.crt");
+$IssuingPem = file_get_contents("$PkiDir/certs/issuing_ca.crt");
+
+file_put_contents("$PkiDir/step/root_ca.crt", $RootPem);
+file_put_contents("$PkiDir/step/intermediate_ca.crt", $IntermediatePem.$IssuingPem);
+
+echo "Paths:\n$PkiDir/step/root_ca.crt\n$PkiDir/step/intermediate_ca.crt\n";
+echo "Issuing password: $IssuingKeyPassphrase\n";
 
 function generatePassword() : ?string {
 
